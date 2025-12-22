@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitation Bar Mitzvah - Avi</title>
+    
+    <!-- PRELOADER CSS (Critique : Doit être chargé avant tout le reste) -->
+    <style>
+        /* Ce style s'affiche AVANT que Tailwind ne soit chargé */
+        #global-loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #1a422e; /* Vert Casino */
+            z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.8s ease-out;
+        }
+        .loader-spinner {
+            width: 50px; height: 50px;
+            border: 4px solid rgba(198, 166, 100, 0.3); /* Or transparent */
+            border-radius: 50%;
+            border-top: 4px solid #c6a664; /* Or solide */
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        .loader-text {
+            color: #c6a664; font-family: sans-serif; 
+            text-transform: uppercase; letter-spacing: 4px; font-size: 12px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+        
+        /* Cache le contenu tant que pas chargé pour éviter les sauts d'image */
+        body.is-loading { overflow: hidden; }
+    </style>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CONFIGURATION POLICE PERSO --- */
+        @font-face {
+            font-family: 'MaPolicePerso'; 
+            /* IMPORTANT : Remplace '/fonts/MaPolice.ttf' par le chemin de ton fichier */
+            src: url('/fonts/MaPolicePerso.ttf') format('truetype'); 
+            font-weight: normal; font-style: normal;
+            /* Optimisation : permet d'afficher le texte avec une police par défaut le temps que celle-ci charge */
+            font-display: swap; 
+        }
+
+        /* Classe spécifique pour le titre AVI */
+        .avi-title-custom {
+            font-family: 'MaPolicePerso', 'Playfair Display', serif; 
+            font-size: 8rem; color: #000; margin-bottom: 2rem;
+            letter-spacing: 0.05em; font-weight: bold;
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.05); line-height: 1;
+        }
+        @media (max-width: 768px) { .avi-title-custom { font-size: 4rem; } }
+
+        /* --- CONFIGURATION THEME CASINO --- */
+        :root {
+            --casino-green: #1a422e; --casino-dark: #0f2b1d;
+            --envelope-color: #111111; --envelope-inner: #8a0a0a;
+            --gold-accent: #c6a664; --gold-shine: #e6c884;
+            --red-suit: #b91c1c; --black-suit: #1a1a1a;
+            --paper-bg: #fffbf2;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif; overflow-x: hidden;
+            background-color: var(--casino-green); color: #1a1a1a;
+        }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+        /* BOUTON MUSIQUE */
+        #music-toggle {
+            position: fixed; top: 20px; right: 20px; z-index: 100;
+            width: 50px; height: 50px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ffd700, #d4af37);
+            border: 4px dashed #b8860b; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s ease;
+            color: #4a3b05; font-size: 1.2rem;
+            opacity: 0; pointer-events: none; transform: scale(0.8);
+        }
+        #music-toggle.visible { opacity: 1; pointer-events: auto; transform: scale(1); }
+        #music-toggle:hover { transform: scale(1.1); filter: brightness(1.2); }
+
+        /* --- BACKGROUND TAPIS VERT LUXE --- */
+        #start-screen, .invitation-bg {
+            background-color: var(--casino-green);
+            background-image: 
+                radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.7) 100%),
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 15px),
+                repeating-linear-gradient(-45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 15px);
+            background-attachment: fixed; 
+        }
+        
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0) 40%, rgba(0,0,0,0.4) 100%);
+            z-index: 0; pointer-events: none;
+        }
+
+        /* --- ENVELOPPE --- */
+        .envelope-container {
+            perspective: 1500px; cursor: pointer; margin-top: 20px; position: relative; z-index: 10;
+            width: 550px; height: 380px; transition: transform 0.3s ease; transform-origin: center center;
+        }
+        @media (max-width: 768px) { .envelope-container { transform: scale(0.7); margin-top: 0; } }
+        @media (max-width: 550px) { .envelope-container { transform: scale(0.55); width: 550px; left: 0; } }
+        @media (max-width: 380px) { .envelope-container { transform: scale(0.45); left: 0; } }
+        @media (min-width: 769px) { .envelope-container:hover { transform: scale(1.02); } }
+
+        .envelope {
+            position: relative; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+            border-radius: 5px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6); border: 1px solid #333;
+        }
+        .envelope-back {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--envelope-color); border-radius: 5px; z-index: 1; overflow: hidden;
+        }
+        .envelope-back::after {
+            content: ''; position: absolute; inset: 10px;
+            background-color: var(--envelope-inner); opacity: 0.8; clip-path: polygon(0 0, 50% 50%, 100% 0);
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.1) 5px, rgba(0,0,0,0.1) 10px);
+        }
+
+        /* --- CARTE PREVIEW --- */
+        .card-preview {
+            position: absolute; bottom: 5px; left: 25px; right: 25px; height: 360px; 
+            background-color: var(--paper-bg); z-index: 2;
+            transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex; align-items: flex-start; justify-content: center;
+            overflow: hidden; 
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid #e0e0e0;
+        }
+        .card-preview.slide-out { transform: translateY(-320px); }
+        .card-preview.highlight {
+            transform: translateY(-420px) scale(1.2); z-index: 50; 
+            box-shadow: 0 40px 80px rgba(0,0,0,0.7); border: 2px solid var(--gold-accent);
+        }
+        
+        .pocket {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none;
+            clip-path: polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%);
+            background: linear-gradient(160deg, #2a2a2a 40%, #000 100%);
+            border-radius: 0 0 5px 5px; border-top: 1px solid #444;
+        }
+        
+        .flap {
+            position: absolute; top: 0; left: 0; width: 100%; height: 220px; z-index: 5;
+            transform-origin: top; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.8s;
+            background: linear-gradient(to bottom, #2a2a2a 0%, #111 100%);
+            clip-path: polygon(0 0, 50% 100%, 100% 0);
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4)); display: flex; justify-content: center; align-items: flex-start;
+        }
+        .flap.open { transform: rotateX(180deg); z-index: 1; background: #222; filter: none; }
+        .flap.open .seal-image { opacity: 0; transition: opacity 0.2s; }
+        
+        .seal-image {
+            margin-top: 80px; width: 100px; height: auto; object-fit: contain; z-index: 6;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6)); transition: opacity 0.3s;
+        }
+
+        #invitation-full {
+            opacity: 0; transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease-out; display: none;
+        }
+        #invitation-full.visible { display: block; }
+        #invitation-full.fade-in-active { opacity: 1; transform: translateY(0); }
+
+        .form-input { border: 2px solid #e2e8f0; transition: all 0.3s; }
+        .form-input:focus {
+            outline: none; border-color: var(--gold-accent); 
+            box-shadow: 0 0 0 3px rgba(198, 166, 100, 0.2);
+        }
+
+        .bg-texture {
+            background-color: var(--paper-bg);
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        }
+
+        .coded-card {
+            background-color: var(--paper-bg);
+            border: 8px solid #fff; outline: 6px solid var(--gold-accent); border-radius: 12px;
+            display: flex; flex-direction: column; height: auto; 
+            box-shadow: 0 0 0 7px var(--gold-accent), 0 25px 50px -12px rgba(0,0,0,0.8), inset 0 0 40px rgba(212, 175, 55, 0.1);
+            position: relative;
+        }
+        .coded-card::before {
+            content: "Avi"; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-10deg);
+            font-family: 'Playfair Display', serif; font-size: 15rem; color: rgba(0,0,0,0.02);
+            pointer-events: none; z-index: 0; white-space: nowrap;
+        }
+        .coded-card > * { z-index: 1; }
+
+        .section-icon {
+            width: 70px; height: 70px; border: 2px solid var(--gold-accent);
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            box-shadow: 5px 5px 10px #d1d1d1, -5px -5px 10px #ffffff;
+            color: var(--gold-accent); display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; margin-bottom: 1.5rem; font-size: 1.8rem;
+        }
+        .section-title {
+            color: #111; font-size: 1.85rem; margin-bottom: 0.75rem;
+            font-family: 'Playfair Display', serif; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+
+        .events-stack {
+            display: flex; flex-direction: column; gap: 1rem;
+            border-top: 1px solid var(--gold-accent); border-bottom: 1px solid var(--gold-accent);
+            margin-top: 2rem; padding: 2rem 0; background-color: rgba(255, 253, 245, 0.6);
+        }
+
+        .event-item {
+            width: 100%; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            position: relative; padding: 2rem 1rem; 
+        }
+        @media (min-width: 768px) { .event-item { padding: 3rem 1rem; } }
+
+        .event-item:not(:last-child)::after {
+            font-size: 2.2rem; position: absolute; bottom: -1.7rem; opacity: 1;
+            font-family: "Segoe UI Symbol", "DejaVu Sans", sans-serif;
+            text-shadow: 0 2px 2px rgba(0,0,0,0.1);
+            background: var(--paper-bg); padding: 0 10px; z-index: 10; border-radius: 50%;
+        }
+
+        .event-item:nth-child(4n+1):not(:last-child)::after { content: "♥"; color: var(--red-suit); }
+        .event-item:nth-child(4n+2):not(:last-child)::after { content: "♠"; color: var(--black-suit); }
+        .event-item:nth-child(4n+3):not(:last-child)::after { content: "♦"; color: var(--red-suit); }
+        .event-item:nth-child(4n+4):not(:last-child)::after { content: "♣"; color: var(--black-suit); }
+
+        #scroll-arrow { 
+            color: var(--gold-accent); background: #1a1a1a; 
+            border: 2px solid var(--gold-accent); box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800 is-loading">
+
+    <!-- LE PRELOADER QUI S'AFFICHE TOUT DE SUITE -->
+    <div id="global-loader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">Chargement...</div>
+    </div>
+
+    <audio id="bg-music" loop>
+        <source src="/audio/musique.mp3" type="audio/mp3">
+    </audio>
+
+    <button id="music-toggle" onclick="toggleMusic()" title="Couper/Activer le son">
+        <i class="fas fa-volume-up"></i>
+    </button>
+
+    <!-- ECRAN D'ACCUEIL CASINO -->
+    <section id="start-screen" class="fixed inset-0 flex flex-col items-center justify-center z-50 transition-opacity duration-1000">
+        <div class="mb-10 text-center z-10" id="instruction-text">
+            <img src="/img/logo-card.svg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" alt="Logo" class="w-48 h-auto mx-auto mb-2 drop-shadow-lg">
+            <div style="display:none; font-family: 'Playfair Display', serif; font-size: 2rem; color: #d4af37; margin-bottom: 1rem;">Avi</div>
+            <p class="text-xs text-[#d4af37] mt-2 uppercase tracking-[0.2em] font-bold" style="text-shadow: 0 2px 4px rgba(0,0,0,0.9);">Ouvrez l'invitation</p>
+        </div>
+
+        <div class="envelope-container" onclick="openEnvelope()">
+            <div class="envelope" id="envelope-el">
+                <div class="envelope-back"></div>
+                <div class="flap" id="flap">
+                    <img src="/img/logo-card.svg" onerror="this.style.display='none'" alt="Logo Sceau" class="seal-image" id="seal-img">
+                </div>
+                
+                <div class="card-preview" id="card-preview">
+                    <div class="w-full h-full bg-texture p-4 flex flex-col items-center justify-start text-center">
+                        <div class="w-full h-full border-4 border-double border-[#c6a664] p-4 flex flex-col items-center rounded-lg relative">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none text-6xl font-serif">A</div>
+
+                            <img src="/img/logo-card.svg" onerror="this.style.display='none'; document.getElementById('preview-fallback-logo').style.display='block'" alt="Logo" class="w-14 opacity-90 mb-2 mt-3">
+                            <div id="preview-fallback-logo" style="display:none; font-family: 'Playfair Display', serif;" class="text-xl text-black mb-2">A</div>
+
+                            <p class="font-serif italic text-[10px] text-gray-500 mb-2 uppercase tracking-widest">Bar Mitzvah Royale</p>
+                            
+                            <h1 class="text-5xl text-black mb-3 font-bold" style="font-family: 'MaPolicePerso', 'Playfair Display', serif;">Avi</h1>
+                            
+                            <div class="w-10 border-t-2 border-[#c6a664] mb-3"></div>
+                            <div class="space-y-1 z-10">
+                                <p class="text-[10px] font-bold text-gray-800 uppercase tracking-wide">Février & Mars 2026</p>
+                            </div>
+                            <div class="mt-auto mb-2 text-xl space-x-2 font-serif flex items-center opacity-80">
+                                <span style="color:#1a1a1a;">♠</span><span style="color:#b91c1c;">♥</span><span style="color:#1a1a1a;">♣</span><span style="color:#b91c1c;">♦</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pocket" id="pocket"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTENU PRINCIPAL -->
+    <main id="invitation-full">
+        <section class="relative min-h-screen flex items-center justify-center invitation-bg p-4 md:py-16 md:px-4">
+            <div class="w-full max-w-3xl coded-card bg-texture p-6 md:p-12 text-center relative flex flex-col justify-between">
+                
+                <!-- HAUT DE CARTE -->
+                <div class="z-10">
+                    <div class="mb-6">
+                         <img src="/img/logo-card.svg" onerror="this.style.display='none'; document.getElementById('text-logo').style.display='block'" alt="Logo Avi" class="w-24 md:w-32 h-auto mx-auto mb-4 drop-shadow-sm">
+                         <h2 id="text-logo" style="display:none;" class="text-4xl text-black font-serif mb-4">A</h2>
+                    </div>
+
+                    <div class="max-w-2xl mx-auto mb-8">
+                        <p class="font-serif italic text-base md:text-lg text-gray-700 leading-relaxed">
+                            <span class="font-bold text-black not-italic mt-2 block uppercase text-sm tracking-[0.2em] mb-4 text-[#c6a664]">Karen, Yighal, Yaniv et Elisheva</span>
+                            ont l'honneur de vous convier à la table de jeu de la vie<br>pour la Bar Mitsva de leur fils et frère
+                        </p>
+                    </div>
+
+                    <h1 class="avi-title-custom">Avi</h1>
+                </div>
+
+                <!-- ZONE D'ÉVÉNEMENTS -->
+                <div class="events-stack z-10 rounded-sm">
+                    <div class="event-item">
+                        <div class="section-icon"><i class="fas fa-synagogue"></i></div>
+                        <h3 class="section-title">Mise des Tefilines</h3>
+                        <div class="text-gray-600 space-y-2 mt-2 text-lg">
+                            <p class="font-bold text-black uppercase tracking-wide">Jeudi 26 Février 2026</p>
+                            <p class="text-2xl font-serif text-[#b91c1c] font-bold">08h30</p>
+                            <div class="mt-4 pt-4 border-t w-20 mx-auto border-gray-300"></div>
+                            <p class="text-sm mt-2 italic">Synagogue Beth Eliahou</p>
+                            <p class="text-xs text-gray-500">4 rue Chevreul, 75011 Paris</p>
+                        </div>
+                    </div>
+
+                    <div class="event-item">
+                        <div class="section-icon"><i class="fas fa-glass-cheers"></i></div>
+                        <h3 class="section-title">La Grande Réception</h3>
+                        <div class="text-gray-600 space-y-2 mt-2 text-lg">
+                            <p class="font-bold text-black uppercase tracking-wide">Dimanche 1 Mars 2026</p>
+                            <div class="font-serif text-xl text-[#b91c1c] font-bold">
+                                <p>Cocktail à 20h00</p>
+                                <p>Dîner & Soirée à 20h30</p>
+                            </div>
+                            <div class="mt-4 pt-4 border-t w-20 mx-auto border-gray-300"></div>
+                            <p class="text-sm mt-2 italic">Pavillon Gravelle</p>
+                            <p class="text-xs text-gray-500">2 route du Pesage, 75012 Paris</p>
+                        </div>
+                    </div>
+
+                    <div class="event-item" id="chabath-hatan">
+                        <div class="section-icon"><i class="fas fa-torah"></i></div>
+                        <h3 class="section-title">Chabath Hatan</h3>
+                        <div class="text-gray-600 space-y-2 mt-2 text-lg">
+                            <p class="font-bold text-black uppercase tracking-wide">Vendredi 27 et Samedi 28 Février 2026</p>
+                            <p class="text-2xl font-serif text-[#b91c1c] font-bold">Heure d'entrée de Chabath</p>
+                            <div class="mt-4 pt-4 border-t w-20 mx-auto border-gray-300"></div>
+                            <p class="text-sm mt-2 italic">Synagogue Beth Eliahou</p>
+                            <p class="text-xs text-gray-500">Suivi d'un Kiddouch Royal</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 text-gray-400 text-sm italic z-10">
+                    <p>RSVP avant le 20 Janvier 2026</p>
+                </div>
+            </div>
+            
+            <div id="scroll-arrow" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 animate-bounce p-3 rounded-full transition-opacity duration-500 z-50 shadow-lg">
+                <i class="fas fa-angle-double-down text-xl"></i>
+            </div>
+        </section>
+
+        <!-- SECTION RSVP -->
+        <section class="py-20 px-4 bg-[#f8f5f0] border-t-8 border-[#c6a664]" id="rsvp">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-5xl text-black mb-3 font-serif">Faites vos jeux</h2>
+                    <p class="text-gray-500 italic text-lg">Merci de confirmer votre présence à la table</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-12 items-start">
+                    <div class="bg-white p-6 md:p-10 rounded-xl shadow-2xl border border-gray-100 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-[#c6a664] transform rotate-45 translate-x-10 -translate-y-10 shadow-lg"></div>
+
+                        <h3 class="text-2xl font-serif text-black mb-8 border-b-2 border-[#c6a664] inline-block pb-2">Vos informations</h3>
+                        <form name="submit-to-google-sheet" class="space-y-6 text-left" onsubmit="submitForm(event)">
+                            <div>
+                                <label for="lastname" class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-widest">Nom</label>
+                                <input type="text" id="lastname" name="Nom" required class="form-input w-full px-4 py-3 rounded-md bg-gray-50" placeholder="Votre nom de famille">
+                            </div>
+                            <div>
+                                <label for="firstname" class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-widest">Prénom</label>
+                                <input type="text" id="firstname" name="Prénom" required class="form-input w-full px-4 py-3 rounded-md bg-gray-50" placeholder="Votre prénom">
+                            </div>
+                            <div>
+                                <label for="guests" class="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-widest">Nombre de joueurs</label>
+                                <select id="guests" name="Invités" class="form-input w-full px-4 py-3 rounded-md bg-gray-50">
+                                    <option value="1">1 personne</option>
+                                    <option value="2">2 personnes</option>
+                                    <option value="3">3 personnes</option>
+                                    <option value="4">4 personnes</option>
+                                    <option value="5">5 personnes</option>
+                                    <option value="6">6 personnes</option>
+                                    <option value="7">7 personnes</option>
+                                    <option value="8">8 personnes</option>
+                                    <option value="9">9 personnes</option>
+                                    <option value="10">10 personnes</option>
+                                </select>
+                            </div>
+                            
+                            <div class="pt-4 border-t border-gray-100 mt-6">
+                                <label class="block text-xs font-bold text-gray-500 mb-4 uppercase tracking-widest">Votre mise :</label>
+                                
+                                <label class="flex items-center p-4 border border-gray-200 rounded-lg bg-gray-50 hover:bg-[#fff9e6] cursor-pointer mb-3 transition-colors shadow-sm">
+                                    <input type="radio" name="Présence" value="Présent" checked class="text-black focus:ring-[#c6a664] h-5 w-5 border-gray-300" onchange="toggleEvents(true)">
+                                    <span class="ml-3 text-black font-bold">Je serai présent(e)</span>
+                                </label>
+
+                                <div id="events-selection" class="ml-2 pl-6 border-l-4 border-[#c6a664] space-y-4 mb-6 transition-all duration-300 overflow-hidden" style="max-height: 500px; opacity: 1;">
+                                    <p class="text-xs text-[#c6a664] uppercase tracking-wide font-bold mt-2 mb-2">Je participerai à :</p>
+                                    
+                                    <label class="flex items-start space-x-3 cursor-pointer group hover:bg-gray-50 p-1 rounded">
+                                        <div class="flex items-center h-5 mt-1">
+                                          <input type="checkbox" name="Téfilines" value="Oui" checked class="w-5 h-5 text-black border-gray-300 rounded focus:ring-[#c6a664]">
+                                        </div>
+                                        <div class="text-sm">
+                                          <span class="font-bold text-gray-800 group-hover:text-black block">Mise des Tefilines</span>
+                                          <span class="text-xs text-gray-400">Jeudi 26 Février</span>
+                                        </div>
+                                    </label>
+
+                                    <label class="flex items-start space-x-3 cursor-pointer group hover:bg-gray-50 p-1 rounded">
+                                        <div class="flex items-center h-5 mt-1">
+                                          <input type="checkbox" name="Chabath" value="Oui" checked class="w-5 h-5 text-black border-gray-300 rounded focus:ring-[#c6a664]">
+                                        </div>
+                                        <div class="text-sm">
+                                          <span class="font-bold text-gray-800 group-hover:text-black block">Chabath Hatan</span>
+                                          <span class="text-xs text-gray-400">Ven. 27 & Sam. 28</span>
+                                        </div>
+                                    </label>
+
+                                    <label class="flex items-start space-x-3 cursor-pointer group hover:bg-gray-50 p-1 rounded">
+                                        <div class="flex items-center h-5 mt-1">
+                                          <input type="checkbox" name="Réception" value="Oui" checked class="w-5 h-5 text-black border-gray-300 rounded focus:ring-[#c6a664]">
+                                        </div>
+                                        <div class="text-sm">
+                                          <span class="font-bold text-gray-800 group-hover:text-black block">Grande Réception</span>
+                                          <span class="text-xs text-gray-400">Dimanche 1 Mars</span>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <label class="flex items-center p-4 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors shadow-sm">
+                                    <input type="radio" name="Présence" value="Absent" class="text-black focus:ring-gray-500 h-5 w-5 border-gray-300" onchange="toggleEvents(false)">
+                                    <span class="ml-3 text-gray-600">Je passe mon tour</span>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="w-full bg-[#111] text-[#c6a664] font-bold py-4 rounded-lg hover:bg-black transition duration-300 shadow-xl mt-4 uppercase tracking-[0.15em] text-sm border border-[#c6a664]">
+                                Confirmer ma présence
+                            </button>
+                        </form>
+                        <div id="success-message" class="hidden mt-6 p-4 bg-green-50 text-green-900 rounded-md border border-green-200 text-center font-bold shadow-inner">
+                            <i class="fas fa-check-circle mr-2"></i> Faites vos jeux, rien ne va plus ! (Réponse envoyée)
+                        </div>
+                    </div>
+                    
+                    <div class="h-80 md:h-full md:min-h-[600px] w-full rounded-xl overflow-hidden shadow-2xl relative border-[6px] border-[#c6a664]">
+                        <iframe width="100%" height="100%" class="absolute inset-0 w-full h-full" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?q=Pavillon+Gravelle+Paris&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
+                        <div class="absolute bottom-6 left-6 right-6 bg-white p-5 rounded-lg shadow-2xl border-l-4 border-[#b91c1c]">
+                            <p class="font-bold text-black text-xl font-serif">Pavillon Gravelle</p>
+                            <p class="text-gray-600 mt-1">2 route du Pesage, 75012 Paris</p>
+                            <a href="https://goo.gl/maps/PavillonGravelle" target="_blank" class="inline-block mt-3 text-xs font-bold text-[#c6a664] uppercase tracking-wider hover:underline">Voir l'itinéraire &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-[#0f0f0f] py-10 text-center text-[#c6a664] text-xs uppercase tracking-widest border-t border-[#333]">
+            <p class="mb-2 opacity-60">© 2026 - Bar-Mitzvah Avi</p>
+            <p class="opacity-40 text-[10px]">Casino Royale Edition</p>
+        </footer>
+    </main>
+
+    <script>
+        const music = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-toggle');
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzDVR4OmZeJ2G-S-Y_xEPV7HZ51CTopNZgfiSsoDtk8k_2s_mjCBCF0zkUSDoPpxKUD/exec';
+        
+        /* GESTION DU PRELOADER */
+        window.addEventListener('load', () => {
+            // Une fois que tout est chargé (images, styles, scripts)
+            const loader = document.getElementById('global-loader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    document.body.classList.remove('is-loading'); // Réactive le scroll si nécessaire
+                }, 800); // Attend la fin de la transition d'opacité
+            }
+        });
+
+        function toggleEvents(isPresent) {
+            const container = document.getElementById('events-selection');
+            const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+
+            if (isPresent) {
+                container.style.maxHeight = '500px';
+                container.style.opacity = '1';
+                container.style.marginTop = '1.5rem';
+                container.style.marginBottom = '1.5rem';
+                checkboxes.forEach(cb => cb.disabled = false);
+            } else {
+                container.style.maxHeight = '0';
+                container.style.opacity = '0';
+                container.style.marginTop = '0';
+                container.style.marginBottom = '0';
+                checkboxes.forEach(cb => cb.disabled = true);
+            }
+        }
+
+        let autoScrollFrame = null;
+
+        window.addEventListener('scroll', function() {
+            const arrow = document.getElementById('scroll-arrow');
+            if (arrow) {
+                if (window.scrollY > 300) {
+                    arrow.style.opacity = '0';
+                    arrow.style.pointerEvents = 'none';
+                } else {
+                    arrow.style.opacity = '1';
+                    arrow.style.pointerEvents = 'auto';
+                }
+            }
+        });
+
+        function startSlowScroll() {
+            const target = document.getElementById('chabath-hatan');
+            if (!target) return;
+
+            const rect = target.getBoundingClientRect();
+            const absoluteElementTop = rect.top + window.scrollY;
+            const targetPosition = absoluteElementTop - (window.innerHeight / 2) + (target.offsetHeight / 2);
+
+            let currentScroll = window.scrollY;
+            
+            if (currentScroll >= targetPosition) return;
+
+            const stopScroll = () => {
+                if (autoScrollFrame) {
+                    cancelAnimationFrame(autoScrollFrame);
+                    autoScrollFrame = null;
+                }
+                ['wheel', 'touchmove', 'keydown', 'mousedown', 'touchstart'].forEach(evt => 
+                    window.removeEventListener(evt, stopScroll)
+                );
+            };
+
+            ['wheel', 'touchmove', 'keydown', 'mousedown', 'touchstart'].forEach(evt => 
+                window.addEventListener(evt, stopScroll, { passive: true, once: true })
+            );
+
+            function animateScroll() {
+                // MODIFICATION VITESSE SCROLL
+                currentScroll += 3.0; // Vitesse accélérée
+                
+                window.scrollTo(0, currentScroll);
+
+                if (currentScroll < targetPosition && (window.innerHeight + window.scrollY) < document.body.offsetHeight) {
+                    autoScrollFrame = requestAnimationFrame(animateScroll);
+                } else {
+                    autoScrollFrame = null;
+                }
+            }
+
+            autoScrollFrame = requestAnimationFrame(animateScroll);
+        }
+
+        function openEnvelope() {
+            const flap = document.getElementById('flap');
+            const card = document.getElementById('card-preview');
+            const envelope = document.getElementById('envelope-el');
+            const startScreen = document.getElementById('start-screen');
+            const mainContent = document.getElementById('invitation-full');
+            const instruction = document.getElementById('instruction-text');
+
+            instruction.style.opacity = '0';
+            flap.classList.add('open');
+
+            const playPromise = music.play();
+
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    musicBtn.classList.add('visible');
+                })
+                .catch(error => {
+                    console.log("Lecture auto impossible :", error);
+                    musicBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                    musicBtn.classList.add('visible');
+                });
+            }
+
+            setTimeout(() => { card.classList.add('slide-out'); }, 600);
+            setTimeout(() => { card.classList.add('highlight'); }, 1400);
+
+            setTimeout(() => {
+                startScreen.style.opacity = '0';
+                mainContent.classList.add('visible');
+                setTimeout(() => {
+                    mainContent.classList.add('fade-in-active');
+                    window.scrollTo(0, 0);
+                    setTimeout(startSlowScroll, 1500);
+                }, 100);
+                setTimeout(() => { startScreen.style.display = 'none'; }, 1000);
+            }, 2500);
+        }
+
+        function toggleMusic() {
+            if (music.paused) {
+                music.play();
+                musicBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+            } else {
+                music.pause();
+                musicBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+            }
+        }
+
+        function submitForm(event) {
+            event.preventDefault();
+            const form = document.forms['submit-to-google-sheet'];
+            const btn = form.querySelector('button');
+            
+            const originalText = btn.innerText;
+            btn.innerText = "Mise en jeu...";
+            btn.disabled = true;
+
+            fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+                .then(response => {
+                    btn.innerText = "Confirmé !";
+                    btn.classList.replace('bg-[#111]', 'bg-green-700');
+                    document.getElementById('success-message').classList.remove('hidden');
+                    form.reset(); 
+                })
+                .catch(error => {
+                    console.error('Error!', error.message);
+                    btn.innerText = "Erreur :(";
+                    btn.classList.replace('bg-[#111]', 'bg-red-700');
+                    btn.disabled = false;
+                    setTimeout(() => {
+                         btn.innerText = originalText;
+                         btn.classList.replace('bg-red-700', 'bg-[#111]');
+                    }, 3000);
+                });
+        }
+    </script>
+</body>
+</html>
