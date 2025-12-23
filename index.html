@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invitation Bar Mitzvah - Avi</title>
     
+    <!-- OPTIMISATION 1 : Préconnexion et Préchargement des ressources critiques -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preload" href="/fonts/MaPolicePerso.ttf" as="font" type="font/ttf" crossorigin>
+
     <!-- PRELOADER CSS (Critique : Doit être chargé avant tout le reste) -->
     <style>
         /* Ce style s'affiche AVANT que Tailwind ne soit chargé */
@@ -165,7 +169,7 @@
         .flap.open .seal-image { opacity: 0; transition: opacity 0.2s; }
         
         .seal-image {
-            margin-top: 80px; width: 100px; height: auto; object-fit: contain; z-index: 6;
+            margin-top: 80px; width: 90px; height: auto; object-fit: contain; z-index: 6;
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6)); transition: opacity 0.3s;
         }
 
@@ -254,7 +258,8 @@
         <div class="loader-text">Chargement...</div>
     </div>
 
-    <audio id="bg-music" loop>
+    <!-- OPTIMISATION 2 : preload="none" pour ne pas bloquer le chargement du site -->
+    <audio id="bg-music" loop preload="none">
         <source src="/audio/JamesBond.mp3" type="audio/mp3">
     </audio>
 
@@ -495,18 +500,23 @@
         const musicBtn = document.getElementById('music-toggle');
         const scriptURL = 'https://script.google.com/macros/s/AKfycbzDVR4OmZeJ2G-S-Y_xEPV7HZ51CTopNZgfiSsoDtk8k_2s_mjCBCF0zkUSDoPpxKUD/exec';
         
-        /* GESTION DU PRELOADER */
-        window.addEventListener('load', () => {
-            // Une fois que tout est chargé (images, styles, scripts)
+        /* GESTION DU PRELOADER AVEC TIMEOUT DE SÉCURITÉ */
+        const hideLoader = () => {
             const loader = document.getElementById('global-loader');
-            if (loader) {
+            if (loader && loader.style.opacity !== '0') {
                 loader.style.opacity = '0';
                 setTimeout(() => {
                     loader.style.display = 'none';
-                    document.body.classList.remove('is-loading'); // Réactive le scroll si nécessaire
-                }, 800); // Attend la fin de la transition d'opacité
+                    document.body.classList.remove('is-loading');
+                }, 800);
             }
-        });
+        };
+
+        // On écoute le chargement complet...
+        window.addEventListener('load', hideLoader);
+        
+        // ...MAIS on force l'affichage après 3s max si la musique/font bloque
+        setTimeout(hideLoader, 3000);
 
         function toggleEvents(isPresent) {
             const container = document.getElementById('events-selection');
@@ -569,9 +579,7 @@
             );
 
             function animateScroll() {
-                // MODIFICATION VITESSE SCROLL
-                currentScroll += 3.0; // Vitesse accélérée
-                
+                currentScroll += 3.0; // Vitesse
                 window.scrollTo(0, currentScroll);
 
                 if (currentScroll < targetPosition && (window.innerHeight + window.scrollY) < document.body.offsetHeight) {
@@ -617,7 +625,7 @@
                 setTimeout(() => {
                     mainContent.classList.add('fade-in-active');
                     window.scrollTo(0, 0);
-                    setTimeout(startSlowScroll, 1500);
+                    setTimeout(startSlowScroll, 1000);
                 }, 100);
                 setTimeout(() => { startScreen.style.display = 'none'; }, 1000);
             }, 2500);
