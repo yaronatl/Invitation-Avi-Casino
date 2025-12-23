@@ -44,6 +44,7 @@
         /* --- CONFIGURATION POLICE PERSO --- */
         @font-face {
             font-family: 'MaPolicePerso'; 
+            /* Assure-toi que le fichier est bien dans le dossier fonts */
             src: url('/fonts/MaPolice.ttf') format('truetype'); 
             font-weight: normal; font-style: normal;
             font-display: swap; 
@@ -69,33 +70,26 @@
 
         body {
             font-family: 'Lato', sans-serif; overflow-x: hidden;
-            /* La couleur de fond est maintenant gérée par .fixed-background */
             background-color: transparent; 
             color: #1a1a1a;
         }
 
         h1, h2, h3 { font-family: 'Playfair Display', serif; }
 
-        /* --- OPTIMISATION BACKGROUND (FLUIDITÉ) --- */
-        /* Au lieu d'utiliser background-attachment: fixed sur le body (qui lag),
-           on utilise un élément séparé positionné en fixe */
+        /* --- OPTIMISATION BACKGROUND --- */
         .fixed-background {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; /* Derrière tout le contenu */
+            z-index: -1;
             background-color: var(--casino-green);
             background-image: 
                 radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.7) 100%),
                 repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 15px),
                 repeating-linear-gradient(-45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 15px);
-            /* Plus besoin de background-attachment: fixed ici car la div elle-même est fixed */
             pointer-events: none;
         }
 
-        /* Les sections deviennent transparentes pour laisser voir le fond fixe */
-        #start-screen, .invitation-bg {
-            background: transparent;
-        }
+        #start-screen, .invitation-bg { background: transparent; }
 
         /* BOUTON MUSIQUE */
         #music-toggle {
@@ -259,7 +253,6 @@
 </head>
 <body class="antialiased text-gray-800 is-loading">
 
-    <!-- FOND FIXE OPTIMISÉ (Règle les saccades) -->
     <div class="fixed-background"></div>
 
     <div id="global-loader">
@@ -267,8 +260,8 @@
         <div class="loader-text">Chargement...</div>
     </div>
 
-    <!-- AUDIO OPTIMISÉ -->
-    <audio id="bg-music" loop preload="none">
+    <!-- REPASSAGE EN AUTO POUR PRIORISER LE SON -->
+    <audio id="bg-music" loop preload="auto">
         <source src="/audio/JamesBond.mp3" type="audio/mp3">
     </audio>
 
@@ -608,16 +601,25 @@
             instruction.style.opacity = '0';
             flap.classList.add('open');
 
+            // --- CORRECTION : AFFICHAGE DU BOUTON ET LECTURE ---
+            
+            // 1. On affiche TOUT DE SUITE le bouton (mode muet par défaut au cas où)
+            musicBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+            musicBtn.classList.add('visible');
+
+            // 2. On tente de lancer la musique
             const playPromise = music.play();
 
             if (playPromise !== undefined) {
                 playPromise.then(_ => {
-                    musicBtn.classList.add('visible');
+                    // SUCCÈS : On change l'icône en "Son activé"
+                    musicBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
                 })
                 .catch(error => {
-                    console.log("Lecture auto impossible :", error);
-                    musicBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
-                    musicBtn.classList.add('visible');
+                    // ÉCHEC (Autoplay bloqué ou fichier non trouvé) : 
+                    // On ne fait rien, le bouton est déjà là en mode "Muet"
+                    // L'utilisateur pourra cliquer dessus pour lancer le son
+                    console.log("Lecture auto impossible (attente interaction utilisateur) :", error);
                 });
             }
 
