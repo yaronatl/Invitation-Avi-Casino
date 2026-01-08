@@ -455,7 +455,8 @@
 
                                     <label id="Chabbat-option" class="flex items-start space-x-3 cursor-pointer group hover:bg-gray-50 p-1 rounded">
                                         <div class="flex items-center h-5 mt-1">
-                                          <input type="checkbox" name="Chabbat" value="Oui" checked class="w-5 h-5 text-black border-gray-300 rounded focus:ring-[#c6a664]">
+                                            <input type="checkbox" id="chabbat-checkbox" checked class="w-5 h-5 text-black border-gray-300 rounded focus:ring-[#c6a664]">
+                                            <input type="hidden" name="Chabbat" id="chabbat-hidden" value="Oui">
                                         </div>
                                         <div class="text-sm">
                                           <span class="font-bold text-gray-800 group-hover:text-black block">Chabbat</span>
@@ -535,14 +536,9 @@
                 const form = document.forms['submit-to-google-sheet'];
 
                 // On évite de créer 2 fois le champ hidden si la fonction est appelée plusieurs fois
-                let hiddenInput = form.querySelector('input[type="hidden"][name="Chabbat"]');
-                if (!hiddenInput) {
-                    hiddenInput = document.createElement('input');
-                    hiddenInput.type = 'hidden';
-                    hiddenInput.name = 'Chabbat';
-                form.appendChild(hiddenInput);
-                }
-                hiddenInput.value = 'Non invité';
+                const hiddenInput = document.getElementById('chabbat-hidden');
+                if (mode === 'simple') hiddenInput.value = 'Non invité';
+
 
             }
         }
@@ -579,7 +575,7 @@
                 
                 checkboxes.forEach(cb => {
                     // Si c'est la case Chabbat ET qu'on est en mode simple, on la laisse désactivée
-                    if (cb.name === 'Chabbat' && isSimpleMode) {
+                    if (cb.id === 'chabbat-checkbox' && isSimpleMode) {
                         cb.disabled = true;
                     } else {
                         cb.disabled = false;
@@ -709,17 +705,19 @@
         function submitForm(event) {
             event.preventDefault();
             const form = document.forms['submit-to-google-sheet'];
-            // Si on est en mode simple, on force Chabbat = "Non invité"
+            // --- Force toujours une valeur pour Chabbat (Oui / Non / Non invité) ---
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('mode') === 'simple') {
-                let hiddenInput = form.querySelector('input[type="hidden"][name="Chabbat"]');
-            if (!hiddenInput) {
-                hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'Chabbat';
-                form.appendChild(hiddenInput);
+            const mode = urlParams.get('mode');
+
+            const chabbatHidden = document.getElementById('chabbat-hidden');
+            const chabbatCheckbox = document.getElementById('chabbat-checkbox');
+
+            if (mode === 'simple') {
+                chabbatHidden.value = 'Non invité';
+            } else {
+            chabbatHidden.value = (chabbatCheckbox && chabbatCheckbox.checked) ? 'Oui' : 'Non';
             }
-            hiddenInput.value = 'Non invité';
+
         }               
             const btn = form.querySelector('button');
             
