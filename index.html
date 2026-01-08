@@ -44,6 +44,7 @@
         /* --- CONFIGURATION POLICE PERSO --- */
         @font-face {
             font-family: 'MaPolicePerso'; 
+            /* Assure-toi que le fichier est bien dans le dossier fonts */
             src: url('/fonts/MaPolice.ttf') format('truetype'); 
             font-weight: normal; font-style: normal;
             font-display: swap; 
@@ -64,25 +65,34 @@
             --red-suit: #b91c1c; --black-suit: #1a1a1a;
             --paper-bg: #fffbf2;
             
-            /* RESTAURATION STYLE NOIR */
-            --envelope-color: #111111; 
-            --envelope-inner: #8a0a0a; 
+            /* STYLE NOIR & ROUGE */
+            --envelope-color: #f4f1ea; 
+            --envelope-inner: #b8860b; 
         }
 
         /* --- CORRECTION SCROLL HORIZONTAL --- */
-        html { overflow-x: hidden; max-width: 100vw; }
+        html {
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+        
         body {
             font-family: 'Lato', sans-serif; 
-            overflow-x: hidden; max-width: 100vw; 
-            background-color: transparent; color: #1a1a1a;
-            margin: 0; padding: 0; position: relative;
+            overflow-x: hidden; 
+            max-width: 100vw; 
+            background-color: transparent; 
+            color: #1a1a1a;
+            margin: 0; padding: 0;
+            position: relative;
         }
 
         h1, h2, h3 { font-family: 'Playfair Display', serif; }
 
         /* --- OPTIMISATION BACKGROUND --- */
         .fixed-background {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
             background-color: var(--casino-green);
             background-image: 
                 radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.7) 100%),
@@ -114,7 +124,7 @@
             z-index: 0; pointer-events: none;
         }
 
-        /* --- ENVELOPPE (RESTAURATION COMPLETE) --- */
+        /* --- ENVELOPPE --- */
         .envelope-container {
             perspective: 1500px; cursor: pointer; margin-top: 20px; position: relative; z-index: 10;
             width: 550px; height: 380px; transition: transform 0.3s ease; transform-origin: center center;
@@ -126,76 +136,69 @@
 
         .envelope {
             position: relative; width: 100%; height: 100%;
-            background-color: var(--envelope-color); /* Noir */
-            /* Texture Faux Cuir */
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.1'/%3E%3C/svg%3E");
+            background-color: var(--envelope-color);
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
             border-radius: 5px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
-            /* RETRAIT DE LA BORDURE CLAIRE QUI POSAIT PROBLEME */
-            border: 1px solid #333; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid #e0e0e0;
         }
-        
         .envelope-back {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--envelope-color); border-radius: 5px; z-index: 1; overflow: hidden;
         }
-        /* Intérieur Rouge */
         .envelope-back::after {
-            content: ''; position: absolute; inset: 10px;
-            background-color: var(--envelope-inner); opacity: 0.8; clip-path: polygon(0 0, 50% 50%, 100% 0);
-            background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 10px);
+            content: ''; position: absolute; inset: 8px;
+            background-color: var(--envelope-inner);
+            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.1) 0px, rgba(255,255,255,0.1) 1px, transparent 1px, transparent 10px),
+                              repeating-linear-gradient(-45deg, rgba(255,255,255,0.1) 0px, rgba(255,255,255,0.1) 1px, transparent 1px, transparent 10px);
+            opacity: 1; clip-path: polygon(0 0, 50% 50%, 100% 0);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
         }
 
-        /* CARTE (z-index 2) */
         .card-preview {
             position: absolute; bottom: 5px; left: 25px; right: 25px; height: 360px; 
             background-color: var(--paper-bg); z-index: 2;
             transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
             display: flex; align-items: flex-start; justify-content: center;
             overflow: hidden; 
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid #e0e0e0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1); border-radius: 12px; border: 1px solid #e0e0e0;
         }
         .card-preview.slide-out { transform: translateY(-320px); }
         .card-preview.highlight {
             transform: translateY(-420px) scale(1.2); z-index: 50; 
-            box-shadow: 0 40px 80px rgba(0,0,0,0.7); border: 2px solid var(--gold-accent);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.5); border: 2px solid var(--gold-accent);
         }
         
-        /* POCHE (z-index 3) - RESTAURATION STYLE NOIR */
         .pocket {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none;
             clip-path: polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%);
-            /* Dégradé noir original */
-            background: linear-gradient(135deg, #2c2c2c 40%, #000000 100%);
+            background: linear-gradient(170deg, #ffffff 30%, #e3e0d9 100%);
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
-            border-radius: 0 0 5px 5px; border-top: 1px solid #333; 
-            filter: drop-shadow(0 -2px 3px rgba(0,0,0,0.5));
+            border-radius: 0 0 5px 5px; border-top: 1px solid #ffffff; 
+            filter: drop-shadow(0 -2px 3px rgba(0,0,0,0.15));
         }
         .pocket::after {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to top left, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%);
+            background: linear-gradient(to top left, transparent 40%, rgba(255,255,255,0.6) 50%, transparent 60%);
             pointer-events: none;
         }
         
-        /* RABAT (z-index 5) - RESTAURATION STYLE NOIR */
         .flap {
             position: absolute; top: 0; left: 0; width: 100%; height: 220px; z-index: 5;
             transform-origin: top; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.8s;
-            /* Dégradé noir original */
-            background: linear-gradient(to bottom, #2c2c2c 0%, #000000 100%);
+            background: linear-gradient(to bottom, #fdfcf9 0%, #e0dcd5 100%);
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
             clip-path: polygon(0 0, 50% 100%, 100% 0);
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); 
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25)); 
             display: flex; justify-content: center; align-items: flex-start;
-            border-bottom: 1px solid #333; 
+            border-bottom: 1px solid #dcd9d4; 
         }
-        /* Dos du rabat noir quand ouvert */
-        .flap.open { transform: rotateX(180deg); z-index: 1; background: #222; filter: none; box-shadow: inset 0 5px 15px rgba(0,0,0,0.5); }
+        .flap.open { transform: rotateX(180deg); z-index: 1; background: #e0e0e0; filter: none; box-shadow: inset 0 5px 15px rgba(0,0,0,0.1); }
         .flap.open .seal-image { opacity: 0; transition: opacity 0.2s; }
         
         .seal-image {
             margin-top: 80px; width: 90px; height: auto; object-fit: contain; z-index: 6;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); transition: opacity 0.3s;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); transition: opacity 0.3s;
         }
 
         #invitation-full {
@@ -299,7 +302,7 @@
 
     <!-- AUDIO -->
     <audio id="bg-music" loop preload="auto">
-        <source src="/audio/JamesBond.mp3" type="audio/mp3">
+        <source src="/audio/Musique.mp3" type="audio/mp3">
     </audio>
 
     <button id="music-toggle" onclick="toggleMusic()" title="Couper/Activer le son">
@@ -362,7 +365,7 @@
 
                     <div class="max-w-2xl mx-auto mb-8">
                         <p class="font-serif italic text-base md:text-lg text-gray-700 leading-relaxed">
-                            <span class="font-bold text-black not-italic mt-2 block uppercase text-sm tracking-[0.2em] mb-4 text-[#c6a664]">Karen, Yighal, Yaniv et Elisheva</span>
+                            <span class="font-bold text-black not-italic mt-2 block uppercase text-sm tracking-[0.2em] mb-4 text-[#c6a664]">Karen, Igal, Yaniv et Elysheva</span>
                             ont l'honneur de vous convier à la table de jeu de la vie<br>pour la Bar Mitsva de leur fils et frère
                         </p>
                     </div>
@@ -379,19 +382,19 @@
                             <p class="font-bold text-black uppercase tracking-wide">Jeudi 26 Février 2026</p>
                             <p class="text-2xl font-serif text-[#b91c1c] font-bold">08h30</p>
                             <div class="mt-4 pt-4 border-t w-20 mx-auto border-gray-300"></div>
-                            <p class="text-sm mt-2 italic">Synagogue Beth Eliahou</p>
-                            <p class="text-xs text-gray-500">4 rue Chevreul, 75011 Paris</p>
+                            <p class="text-sm mt-2 italic">Synagogue Saint Honoré</p>
+                            <p class="text-xs text-gray-500">218 rue du Faubourg Saint Honoré, 75008 Paris</p>
                         </div>
                     </div>
 
                     <div class="event-item">
                         <div class="section-icon"><i class="fas fa-glass-cheers"></i></div>
-                        <h3 class="section-title">La Grande Réception</h3>
+                        <h3 class="section-title">La réception en salle des jeux</h3>
                         <div class="text-gray-600 space-y-2 mt-2 text-lg">
                             <p class="font-bold text-black uppercase tracking-wide">Dimanche 1 Mars 2026</p>
                             <div class="font-serif text-xl text-[#b91c1c] font-bold">
-                                <p>Cocktail à 20h00</p>
-                                <p>Dîner & Soirée à 20h30</p>
+                                <p>à partir de 19h</p>
+                                <p></p>
                             </div>
                             <div class="mt-4 pt-4 border-t w-20 mx-auto border-gray-300"></div>
                             <p class="text-sm mt-2 italic">Pavillon Gravelle</p>
@@ -401,12 +404,12 @@
 
                     <div id="chabath-hatan" class="event-item">
                         <div class="section-icon"><i class="fas fa-torah"></i></div>
-                        <h3 class="section-title">Chabath Hatan</h3>
+                        <h3 class="section-title">Chabath</h3>
                         <div class="text-gray-600 space-y-2 mt-2 text-lg">
                             <p class="font-bold text-black uppercase tracking-wide">Vendredi 27 et Samedi 28 Février 2026</p>
                             <p class="text-2xl font-serif text-[#b91c1c] font-bold">Heure d'entrée de Chabath</p>
                             <div class="mt-4 pt-4 border-t w-20 mx-auto border-gray-300"></div>
-                            <p class="text-sm mt-2 italic">Synagogue Beth Eliahou</p>
+                            <p class="text-sm mt-2 italic">Synagogue Saint Honoré</p>
                             <p class="text-xs text-gray-500">Suivi d'un Kiddouch Royal</p>
                         </div>
                     </div>
@@ -588,6 +591,9 @@
                 }
 
                 // 3. Injecter "Non invité" dans le formulaire
+                // Note : Ton script Google actuel (si non modifié) transformera tout ce qui n'est pas "Oui" en "Non".
+                // Donc "Non invité" sera enregistré comme "Non" dans le tableau, ce qui est correct.
+                // Si tu veux vraiment voir le texte "Non invité", il faudra adapter le script Google.
                 const form = document.forms['submit-to-google-sheet'];
                 const hiddenInput = document.createElement('input');
                 hiddenInput.type = 'hidden';
