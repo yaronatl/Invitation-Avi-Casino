@@ -605,88 +605,52 @@
             }
         });
 
-        function startSlowScroll() {
-            // Cible normale : Chabbath
-            let target = document.getElementById('chabath-hatan');
+                                function startSlowScroll() {
+                        // Cible normale : Chabbath
+                        let target = document.getElementById('chabath-hatan');
 
-            // En mode simple, Chabbath est caché => on scroll vers le RSVP
-            if (!target) {
-                target = document.getElementById('rsvp');
-            }
-            if (!target) return;
+                        // En mode simple, Chabbath est caché => on scroll vers le RSVP
+                        if (!target) {
+                            target = document.getElementById('rsvp');
+                        }
+                        if (!target) return;
 
-            const rect = target.getBoundingClientRect();
-            const absoluteElementTop = rect.top + window.scrollY;
-            const targetPosition = absoluteElementTop - (window.innerHeight / 2) + (target.offsetHeight / 2);
+                        const rect = target.getBoundingClientRect();
+                        const absoluteElementTop = rect.top + window.scrollY;
+                        const targetPosition = absoluteElementTop - (window.innerHeight / 2) + (target.offsetHeight / 2);
 
-            let currentScroll = window.scrollY;
-            if (currentScroll >= targetPosition) return;
+                        let currentScroll = window.scrollY;
+                        if (currentScroll >= targetPosition) return;
 
-            const stopScroll = () => {
-                if (autoScrollFrame) {
-                cancelAnimationFrame(autoScrollFrame);
-                autoScrollFrame = null;
-                }
-                ['wheel', 'touchmove', 'keydown', 'mousedown', 'touchstart'].forEach(evt =>
-                window.removeEventListener(evt, stopScroll)
-                );
-            };
+                        const stopScroll = () => {
+                            if (autoScrollFrame) {
+                            cancelAnimationFrame(autoScrollFrame);
+                            autoScrollFrame = null;
+                            }
+                            ['wheel', 'touchmove', 'keydown', 'mousedown', 'touchstart'].forEach(evt =>
+                            window.removeEventListener(evt, stopScroll)
+                            );
+                        };
 
-            ['wheel', 'touchmove', 'keydown', 'mousedown', 'touchstart'].forEach(evt =>
-                window.addEventListener(evt, stopScroll, { passive: true, once: true })
-            );
+                        ['wheel', 'touchmove', 'keydown', 'mousedown', 'touchstart'].forEach(evt =>
+                            window.addEventListener(evt, stopScroll, { passive: true, once: true })
+                        );
 
-            function animateScroll() {
-                currentScroll += 3.0;
-                window.scrollTo(0, currentScroll);
+                        function animateScroll() {
+                            currentScroll += 3.0;
+                            window.scrollTo(0, currentScroll);
 
-                if (currentScroll < targetPosition && (window.innerHeight + window.scrollY) < document.body.offsetHeight) {
-                autoScrollFrame = requestAnimationFrame(animateScroll);
-                } else {
-                autoScrollFrame = null;
-                }
-            }
+                            if (currentScroll < targetPosition && (window.innerHeight + window.scrollY) < document.body.offsetHeight) {
+                            autoScrollFrame = requestAnimationFrame(animateScroll);
+                            } else {
+                            autoScrollFrame = null;
+                            }
+                        }
 
-            autoScrollFrame = requestAnimationFrame(animateScroll);
-            }
+                        autoScrollFrame = requestAnimationFrame(animateScroll);
+                        }
 
-            const target = document.getElementById('Chabbat-hatan');
-            if (!target) return;
-
-            const rect = target.getBoundingClientRect();
-            const absoluteElementTop = rect.top + window.scrollY;
-            const targetPosition = absoluteElementTop - (window.innerHeight / 2) + (target.offsetHeight / 2);
-
-            let currentScroll = window.scrollY;
-            if (currentScroll >= targetPosition) return;
-
-            const stopScroll = () => {
-                if (autoScrollFrame) {
-                    cancelAnimationFrame(autoScrollFrame);
-                    autoScrollFrame = null;
-                }
-                ['wheel', 'touchmove', 'keydown', 'mousedown', 'touchstart'].forEach(evt => 
-                    window.removeEventListener(evt, stopScroll)
-                );
-            };
-
-            ['wheel', 'touchmove', 'keydown', 'mousedown', 'touchstart'].forEach(evt => 
-                window.addEventListener(evt, stopScroll, { passive: true, once: true })
-            );
-
-            function animateScroll() {
-                currentScroll += 3.0; // Vitesse
-                window.scrollTo(0, currentScroll);
-
-                if (currentScroll < targetPosition && (window.innerHeight + window.scrollY) < document.body.offsetHeight) {
-                    autoScrollFrame = requestAnimationFrame(animateScroll);
-                } else {
-                    autoScrollFrame = null;
-                }
-            }
-
-            autoScrollFrame = requestAnimationFrame(animateScroll);
-        }
+            
 
         function openEnvelope() {
             const flap = document.getElementById('flap');
