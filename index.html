@@ -8,8 +8,7 @@
     <!-- OPTIMISATION 1 : Préconnexion et Préchargement -->
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <link rel="preload" href="/fonts/MaPolicePerso.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preconnect" href="https://script.google.com">
-    <link rel="preconnect" href="https://accounts.google.com">
+
     <!-- PRELOADER CSS -->
     <style>
         #global-loader {
@@ -711,8 +710,7 @@
             }
         }
 
-    
-    function submitForm(event) {
+            function submitForm(event) {
     event.preventDefault();
 
     const form = document.forms['submit-to-google-sheet'];
@@ -752,11 +750,6 @@
     const originalText = btn.innerText;
     btn.innerText = "Mise en jeu...";
     btn.disabled = true;
-
-    // Feedback immédiat
-    btn.innerText = "Réponse enregistrée ✔";
-    btn.classList.replace('bg-[#111]', 'bg-green-700');
-    document.getElementById('success-message')?.classList.remove('hidden');
 
     // --- Envoi ---
     fetch(scriptURL, { method: 'POST', body: new FormData(form) })
