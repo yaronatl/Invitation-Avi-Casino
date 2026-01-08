@@ -702,58 +702,72 @@
             }
         }
 
-        function submitForm(event) {
-            event.preventDefault();
-            const form = document.forms['submit-to-google-sheet'];
+                function submitForm(event) {
+        event.preventDefault();
 
-            // --- Force toujours une valeur pour Chabbat (Oui / Non / Non invité) ---
-            const urlParams = new URLSearchParams(window.location.search);
-            const mode = urlParams.get('mode');
-
-            // 1) Récupère / crée le hidden input
-            let chabbatHidden = document.getElementById('chabbat-hidden');
-            if (!chabbatHidden) {
-                chabbatHidden = document.createElement('input');
-                chabbatHidden.type = 'hidden';
-                chabbatHidden.id = 'chabbat-hidden';
-                chabbatHidden.name = 'Chabbat'; // IMPORTANT : correspond à la colonne Google Sheet
-                form.appendChild(chabbatHidden);
-            }
-
-            // 2) Applique la valeur
-            if (mode === 'simple') {
-                chabbatHidden.value = 'Non invité';
-            } else {
-                const chabbatCheckbox = document.getElementById('chabbat-checkbox');
-                chabbatHidden.value = (chabbatCheckbox && chabbatCheckbox.checked) ? 'Oui' : 'Non';
-            }
-
-            // ... ensuite ton code bouton + fetch ...
+        const form = document.forms['submit-to-google-sheet'];
+        if (!form) {
+            console.error("Formulaire introuvable: name='submit-to-google-sheet'");
+            return;
         }
-               
-            const btn = form.querySelector('button');
-            
-            const originalText = btn.innerText;
-            btn.innerText = "Mise en jeu...";
-            btn.disabled = true;
 
-            fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-                .then(response => {
-                    btn.innerText = "Confirmé !";
-                    btn.classList.replace('bg-[#111]', 'bg-green-700');
-                    document.getElementById('success-message').classList.remove('hidden');
-                    form.reset(); 
-                })
-                .catch(error => {
-                    console.error('Error!', error.message);
-                    btn.innerText = "Erreur :(";
-                    btn.classList.replace('bg-[#111]', 'bg-red-700');
-                    btn.disabled = false;
-                    setTimeout(() => {
-                         btn.innerText = originalText;
-                         btn.classList.replace('bg-red-700', 'bg-[#111]');
-                    }, 3000);
-                });
+        // --- Force toujours une valeur pour Chabbat (Oui / Non / Non invité) ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');
+
+        // Récupère / crée le hidden input Chabbat
+        let chabbatHidden = document.getElementById('chabbat-hidden');
+        if (!chabbatHidden) {
+            chabbatHidden = document.createElement('input');
+            chabbatHidden.type = 'hidden';
+            chabbatHidden.id = 'chabbat-hidden';
+            chabbatHidden.name = 'Chabbat'; // doit matcher la colonne "Chabbat" dans la Sheet
+            form.appendChild(chabbatHidden);
+        }
+
+        if (mode === 'simple') {
+            chabbatHidden.value = 'Non invité';
+        } else {
+            const chabbatCheckbox = document.getElementById('chabbat-checkbox');
+            chabbatHidden.value = (chabbatCheckbox && chabbatCheckbox.checked) ? 'Oui' : 'Non';
+        }
+
+        // --- UI bouton ---
+        const btn = form.querySelector('button[type="submit"]') || form.querySelector('button');
+        if (!btn) {
+            console.error("Bouton submit introuvable dans le formulaire");
+            return;
+        }
+
+        const originalText = btn.innerText;
+        btn.innerText = "Mise en jeu...";
+        btn.disabled = true;
+
+        // --- Envoi ---
+        fetch(scriptURL, { method: 'POST', body: new FormData(form) })
+            .then(() => {
+            btn.innerText = "Confirmé !";
+            btn.classList.replace('bg-[#111]', 'bg-green-700');
+            document.getElementById('success-message')?.classList.remove('hidden');
+            form.reset();
+
+            // Remet la valeur par défaut après reset (sinon vide)
+            if (mode === 'simple') chabbatHidden.value = 'Non invité';
+            else chabbatHidden.value = 'Oui';
+            })
+            .catch(error => {
+            console.error('Error!', error);
+            btn.innerText = "Erreur :(";
+            btn.classList.replace('bg-[#111]', 'bg-red-700');
+            btn.disabled = false;
+
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.classList.replace('bg-red-700', 'bg-[#111]');
+            }, 3000);
+            });
+        }
+
         
     </script>
 </body>
