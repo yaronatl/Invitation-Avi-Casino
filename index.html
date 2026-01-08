@@ -705,20 +705,32 @@
         function submitForm(event) {
             event.preventDefault();
             const form = document.forms['submit-to-google-sheet'];
+
             // --- Force toujours une valeur pour Chabbat (Oui / Non / Non invité) ---
             const urlParams = new URLSearchParams(window.location.search);
             const mode = urlParams.get('mode');
 
-            const chabbatHidden = document.getElementById('chabbat-hidden');
-            const chabbatCheckbox = document.getElementById('chabbat-checkbox');
+            // 1) Récupère / crée le hidden input
+            let chabbatHidden = document.getElementById('chabbat-hidden');
+            if (!chabbatHidden) {
+                chabbatHidden = document.createElement('input');
+                chabbatHidden.type = 'hidden';
+                chabbatHidden.id = 'chabbat-hidden';
+                chabbatHidden.name = 'Chabbat'; // IMPORTANT : correspond à la colonne Google Sheet
+                form.appendChild(chabbatHidden);
+            }
 
+            // 2) Applique la valeur
             if (mode === 'simple') {
                 chabbatHidden.value = 'Non invité';
             } else {
-            chabbatHidden.value = (chabbatCheckbox && chabbatCheckbox.checked) ? 'Oui' : 'Non';
+                const chabbatCheckbox = document.getElementById('chabbat-checkbox');
+                chabbatHidden.value = (chabbatCheckbox && chabbatCheckbox.checked) ? 'Oui' : 'Non';
             }
 
-        }               
+            // ... ensuite ton code bouton + fetch ...
+        }
+               
             const btn = form.querySelector('button');
             
             const originalText = btn.innerText;
