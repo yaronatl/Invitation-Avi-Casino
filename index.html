@@ -726,6 +726,8 @@
     // --- Force toujours une valeur pour Chabbat (Oui / Non / Non invité) ---
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('mode');
+    const presenceValue = form.querySelector('input[name="Présence"]:checked')?.value || '';
+
 
     // Récupère / crée le hidden input Chabbat
     let chabbatHidden = document.getElementById('chabbat-hidden');
@@ -738,11 +740,15 @@
     }
 
     if (mode === 'simple') {
-        chabbatHidden.value = 'Non invité';
+    chabbatHidden.value = 'Non invité';
+    } else if (presenceValue === 'Absent') {
+    // Je passe mon tour = ne vient nulle part
+    chabbatHidden.value = 'Non';
     } else {
-        const chabbatCheckbox = document.getElementById('chabbat-checkbox');
-        chabbatHidden.value = (chabbatCheckbox && chabbatCheckbox.checked) ? 'Oui' : 'Non';
+    const chabbatCheckbox = document.getElementById('chabbat-checkbox');
+    chabbatHidden.value = (chabbatCheckbox && chabbatCheckbox.checked) ? 'Oui' : 'Non';
     }
+
 
     // --- UI bouton ---
     const btn = form.querySelector('button[type="submit"]') || form.querySelector('button');
