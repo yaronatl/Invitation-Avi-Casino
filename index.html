@@ -5,16 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Invitation Bar Mitzvah - Avi</title>
     
-    <!-- OPTIMISATION 1 : Préconnexion et Préchargement -->
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <link rel="preload" href="/fonts/MaPolicePerso.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="preconnect" href="https://script.google.com">
     <link rel="preconnect" href="https://accounts.google.com">
-    <!-- PRELOADER CSS -->
     <style>
         #global-loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #1a422e; /* Vert Casino */
+            background-color: #1a422e;
             z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: opacity 0.8s ease-out;
@@ -42,10 +40,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 
     <style>
-        /* --- CONFIGURATION POLICE PERSO --- */
         @font-face {
             font-family: 'MaPolicePerso'; 
-            /* Assure-toi que le fichier est bien dans le dossier fonts */
             src: url('/fonts/MaPolice.ttf') format('truetype'); 
             font-weight: normal; font-style: normal;
             font-display: swap; 
@@ -59,7 +55,6 @@
         }
         @media (max-width: 768px) { .avi-title-custom { font-size: 4rem; } }
 
-        /* --- CONFIGURATION THEME CASINO --- */
         :root {
             --casino-green: #1a422e; --casino-dark: #0f2b1d;
             --gold-accent: #c6a664; --gold-shine: #e6c884;
@@ -69,7 +64,6 @@
             --envelope-inner: #8a0a0a; 
         }
 
-        /* --- CORRECTION SCROLL HORIZONTAL --- */
         html {
             overflow-x: hidden;
             max-width: 100vw;
@@ -77,8 +71,8 @@
         
         body {
             font-family: 'Lato', sans-serif; 
-            overflow-x: hidden; /* Force le masquage */
-            max-width: 100vw; /* Empêche le dépassement */
+            overflow-x: hidden; 
+            max-width: 100vw; 
             background-color: transparent; 
             color: #1a1a1a;
             margin: 0; padding: 0;
@@ -87,7 +81,6 @@
 
         h1, h2, h3 { font-family: 'Playfair Display', serif; }
 
-        /* --- OPTIMISATION BACKGROUND --- */
         .fixed-background {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -102,7 +95,6 @@
 
         #start-screen, .invitation-bg { background: transparent; }
 
-        /* BOUTON MUSIQUE */
         #music-toggle {
             position: fixed; top: 20px; right: 20px; z-index: 100;
             width: 50px; height: 50px; border-radius: 50%;
@@ -123,7 +115,6 @@
             z-index: 0; pointer-events: none;
         }
 
-        /* --- ENVELOPPE --- */
         .envelope-container {
             perspective: 1500px; cursor: pointer; margin-top: 20px; position: relative; z-index: 10;
             width: 550px; height: 380px; transition: transform 0.3s ease; transform-origin: center center;
@@ -271,7 +262,6 @@
         <div class="loader-text">Chargement...</div>
     </div>
 
-    <!-- REPASSAGE EN AUTO POUR PRIORISER LE SON -->
     <audio id="bg-music" loop preload="auto">
         <source src="/audio/Musique.mp3" type="audio/mp3">
     </audio>
@@ -280,7 +270,6 @@
         <i class="fas fa-volume-up"></i>
     </button>
 
-    <!-- ECRAN D'ACCUEIL CASINO -->
     <section id="start-screen" class="fixed inset-0 flex flex-col items-center justify-center z-50 transition-opacity duration-1000">
         <div class="mb-10 text-center z-10" id="instruction-text">
             <img src="/img/logo-card.svg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'" alt="Logo" class="w-48 h-auto mx-auto mb-2 drop-shadow-lg">
@@ -322,12 +311,10 @@
         </div>
     </section>
 
-    <!-- CONTENU PRINCIPAL -->
     <main id="invitation-full">
         <section class="relative min-h-screen flex items-center justify-center invitation-bg p-4 md:py-16 md:px-4">
             <div class="w-full max-w-3xl coded-card bg-texture p-6 md:p-12 text-center relative flex flex-col justify-between">
                 
-                <!-- HAUT DE CARTE -->
                 <div class="z-10">
                     <div class="mb-6">
                          <img src="/img/logo-card.svg" onerror="this.style.display='none'; document.getElementById('text-logo').style.display='block'" alt="Logo Avi" class="w-24 md:w-32 h-auto mx-auto mb-4 drop-shadow-sm">
@@ -344,7 +331,6 @@
                     <h1 class="avi-title-custom">Avi</h1>
                 </div>
 
-                <!-- ZONE D'ÉVÉNEMENTS -->
                 <div class="events-stack z-10 rounded-sm">
                     <div class="event-item">
                         <div class="section-icon"><i class="fas fa-synagogue"></i></div>
@@ -396,7 +382,6 @@
             </div>
         </section>
 
-        <!-- SECTION RSVP -->
         <section class="py-20 px-4 bg-[#f8f5f0] border-t-8 border-[#c6a664]" id="rsvp">
             <div class="max-w-6xl mx-auto">
                 <div class="text-center mb-12">
@@ -515,30 +500,23 @@
         const music = document.getElementById('bg-music');
         const musicBtn = document.getElementById('music-toggle');
         const scriptURL = 'https://script.google.com/macros/s/AKfycbyyKrlWcA9jzvvye87nuapzbMuQuXx-6uPZkKDcqJQ2PTH2Lox04ZaB3untY_jrfTcg/exec';
-        // --- GESTION DES INVITÉS (AVEC OU SANS Chabbat) ---
         function checkInvitationMode() {
-            // On regarde si l'URL contient "?mode=simple"
             const urlParams = new URLSearchParams(window.location.search);
             const mode = urlParams.get('mode');
 
             if (mode === 'simple') {
-                // 1. On cache la section visuelle Chabbat
                 const eventSection = document.getElementById('Chabbat-hatan');
                 if (eventSection) eventSection.style.display = 'none';
 
-                // 2. On cache l'option dans le formulaire
                 const optionLabel = document.getElementById('Chabbat-option');
                 if (optionLabel) {
                     optionLabel.style.display = 'none';
-                    // On désactive la case pour qu'elle ne soit pas envoyée comme "Oui"
                     const checkbox = optionLabel.querySelector('input');
                     if (checkbox) checkbox.disabled = true;
                 }
 
-                // 3. On injecte / force "Non invité" pour le Google Sheet
                 const form = document.forms['submit-to-google-sheet'];
 
-                // On évite de créer 2 fois le champ hidden si la fonction est appelée plusieurs fois
                 const hiddenInput = document.getElementById('chabbat-hidden');
                 if (mode === 'simple') hiddenInput.value = 'Non invité';
 
@@ -546,9 +524,7 @@
             }
         }
 
-        // On lance la vérification au chargement
         window.addEventListener('load', checkInvitationMode);
-        /* GESTION DU PRELOADER AVEC TIMEOUT DE SÉCURITÉ */
         const hideLoader = () => {
             const loader = document.getElementById('global-loader');
             if (loader && loader.style.opacity !== '0') {
@@ -561,13 +537,12 @@
         };
 
         window.addEventListener('load', hideLoader);
-        setTimeout(hideLoader, 3000); // Sécurité anti-blocage
+        setTimeout(hideLoader, 3000); 
 
         function toggleEvents(isPresent) {
             const container = document.getElementById('events-selection');
             const checkboxes = container.querySelectorAll('input[type="checkbox"]');
             
-            // Vérifie si on est en mode simple (Chabbat caché)
             const isSimpleMode = document.getElementById('Chabbat-option').style.display === 'none';
 
             if (isPresent) {
@@ -577,7 +552,6 @@
                 container.style.marginBottom = '1.5rem';
                 
                 checkboxes.forEach(cb => {
-                    // Si c'est la case Chabbat ET qu'on est en mode simple, on la laisse désactivée
                     if (cb.id === 'chabbat-checkbox' && isSimpleMode) {
                         cb.disabled = true;
                     } else {
@@ -609,10 +583,8 @@
         });
 
                                 function startSlowScroll() {
-                        // Cible normale : Chabbath
                         let target = document.getElementById('chabath-hatan');
 
-                        // En mode simple, Chabbath est caché => on scroll vers le RSVP
                         if (!target) {
                             target = document.getElementById('rsvp');
                         }
@@ -666,24 +638,17 @@
             instruction.style.opacity = '0';
             flap.classList.add('open');
 
-            // --- CORRECTION : AFFICHAGE DU BOUTON ET LECTURE ---
             
-            // 1. On affiche TOUT DE SUITE le bouton (mode muet par défaut au cas où)
             musicBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
             musicBtn.classList.add('visible');
 
-            // 2. On tente de lancer la musique
             const playPromise = music.play();
 
             if (playPromise !== undefined) {
                 playPromise.then(_ => {
-                    // SUCCÈS : On change l'icône en "Son activé"
                     musicBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
                 })
                 .catch(error => {
-                    // ÉCHEC (Autoplay bloqué ou fichier non trouvé) : 
-                    // On ne fait rien, le bouton est déjà là en mode "Muet"
-                    // L'utilisateur pourra cliquer dessus pour lancer le son
                     console.log("Lecture auto impossible (attente interaction utilisateur) :", error);
                 });
             }
@@ -723,26 +688,23 @@
         return;
     }
 
-    // --- Force toujours une valeur pour Chabbat (Oui / Non / Non invité) ---
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('mode');
     const presenceValue = form.querySelector('input[name="Présence"]:checked')?.value || '';
 
 
-    // Récupère / crée le hidden input Chabbat
     let chabbatHidden = document.getElementById('chabbat-hidden');
     if (!chabbatHidden) {
         chabbatHidden = document.createElement('input');
         chabbatHidden.type = 'hidden';
         chabbatHidden.id = 'chabbat-hidden';
-        chabbatHidden.name = 'Chabbat'; // doit matcher la colonne "Chabbat" dans la Sheet
+        chabbatHidden.name = 'Chabbat'; 
         form.appendChild(chabbatHidden);
     }
 
     if (mode === 'simple') {
     chabbatHidden.value = 'Non invité';
     } else if (presenceValue === 'Absent') {
-    // Je passe mon tour = ne vient nulle part
     chabbatHidden.value = 'Non';
     } else {
     const chabbatCheckbox = document.getElementById('chabbat-checkbox');
@@ -750,7 +712,6 @@
     }
 
 
-    // --- UI bouton ---
     const btn = form.querySelector('button[type="submit"]') || form.querySelector('button');
     if (!btn) {
         console.error("Bouton submit introuvable dans le formulaire");
@@ -761,12 +722,10 @@
     btn.innerText = "Mise en jeu...";
     btn.disabled = true;
 
-    // Feedback immédiat
     btn.innerText = "Réponse enregistrée ✔";
     btn.classList.replace('bg-[#111]', 'bg-green-700');
     document.getElementById('success-message')?.classList.remove('hidden');
 
-    // --- Envoi ---
     fetch(scriptURL, { method: 'POST', body: new FormData(form) })
         .then(() => {
         btn.innerText = "Confirmé !";
@@ -774,7 +733,6 @@
         document.getElementById('success-message')?.classList.remove('hidden');
         form.reset();
 
-        // Remet la valeur par défaut après reset (sinon vide)
         if (mode === 'simple') chabbatHidden.value = 'Non invité';
         else chabbatHidden.value = 'Oui';
         })
